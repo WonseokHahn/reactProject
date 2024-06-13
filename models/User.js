@@ -1,4 +1,4 @@
-const Mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
 // schema란 만드는 테이블의 자료형을 지정해주는 것
 const userSchema = mongoose.Schema({
@@ -14,11 +14,11 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         minlength: 5,
-        minlength: 20,
+        maxlength: 20,
     },
     lastname: {
         type: String,
-        minlength: 50,
+        maxlength: 50,
     },
     role: {
         type: Number,
