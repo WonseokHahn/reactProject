@@ -18,10 +18,10 @@ mongoose.connect(dbURI, {
 
 app.get('/', (req, res) => {
   res.send('ㅎㅇㅎㅇ 반가워')
+
 })
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-// mongodb+srv://bbeenn97:asdf1997!!@reactclusterhws.id7yacl.mongodb.net/?retryWrites=true&w=majority&appName=ReactClusterHWS
