@@ -42,6 +42,7 @@ app.post('/register', (req, res) => {
   async function saveUser(req, res) {
     try {
      // user.save()는 프로미스를 반환합니다.
+     // save 함수가 더이상 콜백하지 않습니다.
      const doc = await user.save();
      return res.status(200).json({
        success: true
