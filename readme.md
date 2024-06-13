@@ -24,6 +24,10 @@ git설치
 4. .gitignore파일 생성 후 node_modules 기입
 5. git rm --cached node_modules -r를 통해서 Staging Area에 들어간 일부 제거
 6. git commit -m "" commit 메세지 기입
+7. git branch 이름 , -d 이름 => 생성/제거  (복사하는거임 main을)
+8. git checkout 이름 => 만든 브랜치로 변경
+9. git remote add origin https://github.com/WonseokHahn/reactProject.git 로 원격과 로컬 연결
+10. git push origin main 으로 진짜 원격에 데이터 넣어줌 
 
 ssh를 통해서 통신보안 강화하는 법
 1. git ssh 생성을 구글에 검색 후 하라는대로 진행 
