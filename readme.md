@@ -40,3 +40,9 @@ liveServer 만드는 방법
 
 암호화 할때 필요한 기능 설치
 1. npm install bcrypt --save
+
+토큰을 만들때 필요한 기능 설치
+1. npm install jsonwebtoken --save
+
+회원가입 기능 만들 때 서버기준
+1. npm install cookie-parser --save => 데이터를 받았을 때 해석하는 기능

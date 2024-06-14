@@ -4,6 +4,7 @@ const express = require('express')
 const app = express()
 const port = 5000
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const {User} = require("./models/User")
 const mongoose = require('mongoose')
 
@@ -31,7 +32,7 @@ app.get('/', (req, res) => {
 
 })
 
-// 들어갈 값 endPoint
+// 회원가입용 controller
 app.post('/register', (req, res) => {
   
   // 회원가입할 때 필요한 정보들을 Client에서 가져오면 그것들을 데이터 베이스에 넣어준다.
@@ -56,6 +57,37 @@ app.post('/register', (req, res) => {
   saveUser(req, res);
 
 })
+
+// 로그인용 controller
+app.post('/login', async (req, res) => {
+  try {
+    // findOne 함수는 더이상 콜백을 지원하지 않습니다.
+    const userInfo = await User.findOne({email: req.body.email});
+    if (!userInfo) {
+      return res.json({
+        loginSuccess: false,
+        message: "제공된 이메일에 해당하는 유저가 없습니다."
+      });
+    }
+
+    const isMatch = await userInfo.comparePassword(req.body.password);
+
+    if (!isMatch) {
+      return res.json({
+        loginSuccess: false,
+        message: "비밀번호가 틀렸습니다."
+      });
+    }
+
+    const user = await userInfo.generateToken();
+    res.cookie("x_auth", user.token)
+       .status(200)
+       .json({ loginSuccess: true, userId: user._id });
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
