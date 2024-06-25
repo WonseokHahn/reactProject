@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         minlength: 5,
-        maxlength: 20,
+        maxlength: 200,
     },
     lastname: {
         type: String,
@@ -58,6 +58,7 @@ userSchema.pre('save', function(next){
 
 })
 
+
 userSchema.methods.comparePassword = async function(plainPassword) {
     try {
         const isMatch = await bcrypt.compare(plainPassword, this.password);
@@ -67,22 +68,53 @@ userSchema.methods.comparePassword = async function(plainPassword) {
     }
 };
 
+userSchema.methods.generateToken = async function() {
+    try {
+        var user = this;
 
-userSchema.methods.generateToke = function(sb){
-    var user = this;
+        // jsonwebtoken을 이용해서 token을 생성하기
+        var token = jwt.sign({ id: user._id.toHexString() }, 'secretToken');
 
-    // jsonwebtoken을 이용해서 token을 생성하기
-    var token  = jwt.sign(user._id.toHexString, 'secretToken')
+        // 토큰을 사용자 객체에 저장
+        user.token = token;
 
+        // 사용자 객체를 데이터베이스에 저장
+        await user.save();
 
-    user.token = token
-    user.save(function(err, user){
-        if(err) return cb(err)
-        cb(null, user)
-    })
-
-    
+        // 저장된 사용자 객체 반환
+        return user;
+    } catch (err) {
+        console.error('Error generating token:', err);
+        throw err;
+    }
 }
+
+userSchema.statics.findByToken = async function(token) {
+    const user = this;
+
+    try {
+        // 토큰을 비동기적으로 검증합니다.
+        // callback과 promise에 대해서 자세히 알아보기
+        const decoded = await new Promise((resolve, reject) => {
+            jwt.verify(token, 'secretToken', (err, decoded) => {
+                if (err) reject(err);
+                resolve(decoded);
+            });
+        });
+
+        // 디코딩된 _id와 일치하는 사용자를 찾습니다.
+        const foundUser = await user.findOne({
+            "_id" : decoded,
+            "token" : token
+        });
+
+        return foundUser; // 찾은 사용자를 반환합니다.
+    } catch (err) {
+        throw err; // 과정 중 발생한 모든 오류를 처리합니다.
+    }
+}
+
+
 
 const User = mongoose.model('User', userSchema)
 
