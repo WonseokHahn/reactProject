@@ -96,7 +96,7 @@ app.post('/api/users/login', async (req, res) => {
 
 
 // role이 0이면 일반 유저 1이면 어드민
-app.get('/api/users/auth' , auth , async (req, res) => {
+app.get('/api/users/auth' , auth , (req, res) => {
   req.status(200).json({
     _id: req.user._id,
     isAdmin: req.user.role === 0 ? false : true,
