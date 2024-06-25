@@ -5,6 +5,11 @@ const jwt = require('jsonwebtoken');
 
 // schema란 만드는 테이블의 자료형을 지정해주는 것
 const userSchema = mongoose.Schema({
+    // _id: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     default: mongoose.Types.ObjectId, // ObjectId 자동 생성 설정
+    //     required: true
+    // },
     name:{
         type: String,
         maxlength: 50
@@ -77,10 +82,10 @@ userSchema.methods.generateToken = async function() {
 
         // 토큰을 사용자 객체에 저장
         user.token = token;
-
+        
         // 사용자 객체를 데이터베이스에 저장
         await user.save();
-
+        
         // 저장된 사용자 객체 반환
         return user;
     } catch (err) {
@@ -101,13 +106,12 @@ userSchema.statics.findByToken = async function(token) {
                 resolve(decoded);
             });
         });
-
         // 디코딩된 _id와 일치하는 사용자를 찾습니다.
         const foundUser = await user.findOne({
-            "_id" : decoded,
+            "_id" : decoded.id,
             "token" : token
         });
-
+        // console.log(foundUser);
         return foundUser; // 찾은 사용자를 반환합니다.
     } catch (err) {
         throw err; // 과정 중 발생한 모든 오류를 처리합니다.

@@ -7,7 +7,7 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const {User} = require("./models/User")
 const mongoose = require('mongoose')
-const auth = require('./middleware/auth')
+const {auth} = require('./middleware/auth')
 
 // 실서버, 개발서버에서 사용될 값을 나눠놓음
 const config = require('./config/key')
@@ -27,6 +27,8 @@ mongoose.connect(dbURI, {
 .then(() => console.log('MongoDB Connected..'))
 .catch(err => console.error('MongoDB Connection Error:', err))
 
+// cookie파싱하는 것 이 앱에서 사용
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
   res.send('ㅎㅇㅎㅇ 반가워 구라임~')
@@ -34,7 +36,7 @@ app.get('/', (req, res) => {
 })
 
 // 회원가입용 controller
-app.post('/api/users/register', (req, res) => {
+app.post('/api/users/register', async (req, res) => {
   
   // 회원가입할 때 필요한 정보들을 Client에서 가져오면 그것들을 데이터 베이스에 넣어준다.
   const user = new User(req.body)
@@ -70,7 +72,6 @@ app.post('/api/users/login', async (req, res) => {
         message: "제공된 이메일에 해당하는 유저가 없습니다."
       });
     }
-
     const isMatch = await userInfo.comparePassword(req.body.password);
 
     if (!isMatch) {
@@ -80,21 +81,22 @@ app.post('/api/users/login', async (req, res) => {
       });
     }
 
-    const user = userInfo.generateToken();
+    const user = await userInfo.generateToken();
 
     // 토큰은 쿠키, 로컬스토리지 등에 저장할 수 있음
     res.cookie("x_auth", user.token)
        .status(200)
-       .json({ loginSuccess: true, userId: user._id });
+       .json({ loginSuccess: true, userId: user._id , token: user.token});
   } catch (err) {
     console.log(err);
+
     return res.status(400).send(err);
   }
 });
 
 
 // role이 0이면 일반 유저 1이면 어드민
-app.get('/api/users/auth' , auth , (req, res) => {
+app.get('/api/users/auth' , auth , async (req, res) => {
   req.status(200).json({
     _id: req.user._id,
     isAdmin: req.user.role === 0 ? false : true,
@@ -108,16 +110,29 @@ app.get('/api/users/auth' , auth , (req, res) => {
 })
 
 
-// 몽구스 커넥션에 이벤트 리스너를 달게 해준다. 에러 발생 시 에러 내용을 기록하고, 연결 종료 시 재연결을 시도한다.
-mongoose.connection.on('error', (error) => {
-  console.error('몽고디비 연결 에러', error);
-});
 
-mongoose.connection.on('disconnected', () => {
-  console.error('몽고디비 연결이 끊겼습니다. 연결을 재시도합니다.');
-  connect(); // 연결 재시도
-});
+// 로그아웃 API 정의 (async/await 사용)
+app.get('/api/users/logout', auth, async (req, res) => {
+  try {
+      // 유저의 토큰을 비워줌
+      const updatedUser = await User.findOneAndUpdate(
+          { _id: req.user._id },
+          { $set: { token: "" } },
+          { new: true } // 업데이트된 문서를 반환받기 위해 옵션 추가
+      );
 
+      if (!updatedUser) {
+          return res.json({ success: false, message: "로그아웃 실패: 사용자를 찾을 수 없습니다." });
+      }
+
+      return res.status(200).send({
+          success: true,
+          message: "로그아웃 성공"
+      });
+  } catch (err) {
+      return res.json({ success: false, err });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
