@@ -77,3 +77,6 @@ npm install을 할 때 자동으로 local에 다운받음
 
 원래는 npm install -g create-react-app을 통해서 컴퓨터 bin파일 (appdata) 안에 생성해준 앱을 사용
 요즘은 npx create-react-app을 통해서 노드 레지스터리 안의 앱을 사용 => 디스크공간 이득
+
+라우터 설치
+npm install react-router-dom
