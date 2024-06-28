@@ -1,3 +1,5 @@
+(Server)
+
 nodejs 랑 expressjs 설치 및 설정 방법
 
 1. nodejs 랑 expressjs를 다운받아야함
@@ -51,3 +53,27 @@ liveServer 만드는 방법
 Auth라는 기능을 만들어야 하는 이유
 ※ 홈페이지를 가보면 여러 페이지가 있는데 그 페이지를 이동할 때마다 권한이 필요한 페이지들이 있기 때문에 이를 구분하기 위함 
 ex. A->B로 갈 때, 갈수 있는 사람인지 쿠키의 토큰으로 디비를 통해 검증 
+
+
+
+
+(Client)
+
+react의 특징
+real DOM / virtual DOM => 여러 리스트 중 하나만 수정하면 그 부분을 찾아서 수정함
+
+Babel이란
+javaScript의 여러 버전이 있는데 오래된 브라우져이서 사용이 안될 수도 있으므로 es6문법으로 변환해줌
+
+Webpack이란
+복잡한 모듈을 번들로 묵어주는 역할
+
+react 다운 명령어
+npx create-react-app . ( .은 그 위치에 react앱을 다운받겟다는 뜻)
+
+NPM이란?
+npm : 라이브러리 저장공간 
+npm install을 할 때 자동으로 local에 다운받음
+
+원래는 npm install -g create-react-app을 통해서 컴퓨터 bin파일 (appdata) 안에 생성해준 앱을 사용
+요즘은 npx create-react-app을 통해서 노드 레지스터리 안의 앱을 사용 => 디스크공간 이득

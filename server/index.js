@@ -109,8 +109,6 @@ app.get('/api/users/auth' , auth , (req, res) => {
   })
 })
 
-
-
 // 로그아웃 API 정의 (async/await 사용)
 app.get('/api/users/logout', auth, async (req, res) => {
   try {
